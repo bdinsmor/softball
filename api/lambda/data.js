@@ -8,8 +8,19 @@ AWS.config.update({
 var dynamoDB = new AWS.DynamoDB();
 var documentClient = new AWS.DynamoDB.DocumentClient();
 var rfr = require('rfr');
+var _ = require('underscore');
 var config = rfr('config');
 let LambdaError = require('./errors');
+
+var myCredentials = new AWS.EnvironmentCredentials('AWS'); // Lambda provided credentials
+var es = require('elasticsearch').Client({
+  hosts: 'https://search-recipes-xmzhtja4kfmcod5nwh74hjsy5q.us-east-1.es.amazonaws.com',
+  connectionClass: require('http-aws-es'),
+  amazonES: {
+    region: "us-east-1",
+    credentials: myCredentials
+  }
+});
 
 class Table {
   /**
@@ -57,27 +68,30 @@ class Table {
     });
   }
 
-  scan() {
+  query(indexName, key) {
+    console.log("inside query...");
     return new Promise((resolve, reject) => {
-      documentClient.scan({
-        TableName: this.tableParams.TableName,
-        ConsistentRead: true
-      }, (err, data) => {
-        if (err) {
-          reject(LambdaError.internalError(err));
-        } else {
-          let items = [];
-          if (data && data.Items) {
-            items = data.Items;
-          }
-          resolve({ items });
-        }
-      });
+      this.findCategoryRecipes(key).then(function (items) {
+        resolve({ items });
+      }).catch(function (err) {
+        reject(LambdaError.putDataFailed(err));
+      })
+    });
+  }
+
+  scan() {
+    console.log("inside scan...");
+    return new Promise((resolve, reject) => {
+      this.findCategoryRecipes(key).then(function (items) {
+        resolve({ items });
+      }).catch(function (err) {
+        reject(LambdaError.putDataFailed(err));
+      })
     });
   }
 
   put(data) {
-    for (var i=0;i<this.uuid.length;i++) {
+    for (var i = 0; i < this.uuid.length; i++) {
       // If provided don't create an UUID on the property that is marked for auto uuid.
       data[this.uuid[i]] = data[this.uuid[i]] || uuid.v1();
     }
@@ -88,6 +102,8 @@ class Table {
         data.createTime = new Date().toISOString();
       }
     }
+
+    console.log("inserted recipe into elasticsearch...");
     return new Promise((resolve, reject) => {
       documentClient.put({
         TableName: this.tableParams.TableName,
@@ -97,10 +113,72 @@ class Table {
           console.error(err);
           reject(LambdaError.putDataFailed(err));
         } else {
-          resolve(data);
+          this.addDocument(data).then(function (esReturn) {
+            resolve(data);
+          }).catch(function (docError) {
+            reject(LambdaError.putDataFailed(docError));
+          })
         }
       });
+    }).catch(function (error) {
+      console.log('index error:  ' + error);
+    })
+
+  }
+
+  findCategoryRecipes(categoryValue) {
+    return es.search({
+      index: 'recipes',
+      body: {
+        query: {
+          term: {
+            category: categoryValue
+          }
+        }
+      }
+    }).then(function (body) {
+      console.log("category hits:  " + JSON.stringify(body, null, 2));
+      return _.map(body.hits.hits, function (hit) {
+        return hit._source;
+      });
+    })
+  }
+
+  createIndex() {
+    return es.indices.exists({
+      index: "recipes"
+    }).then(function (indexExists) {
+      if (indexExists) {
+        console.log("index exists:  " + indexExists);
+      } else {
+        return es.indices.create({
+          index: "recipes"
+        }).then(function (iResponse) {
+          var body = {
+            recipe: {
+              properties: {
+                name: { "type": "string", "index": "not_analyzed" },
+                categories: { "type": "string", "index": "not_analyzed" }
+              }
+            }
+          };
+          return es.indices.putMapping({ index: "recipes", type: "recipe", body: body });
+        });
+      }
+    })
+
+  }
+
+  addDocument(document) {
+    return this.createIndex().then(function (iDone) {
+      console.log("index ok, will insert recipe now...");
+      return es.index({
+        index: "recipes",
+        type: "recipe",
+        body: document
+      });
     });
+
   }
 
   deleteTable() {
@@ -140,8 +218,8 @@ class Table {
         if (err) {
           if (err.code === 'ResourceNotFoundException') {
             this.createTable()
-            .then(data => {resolve(data);} )
-            .catch(err => {reject(err); });
+              .then(data => { resolve(data); })
+              .catch(err => { reject(err); });
           } else {
             reject(err);
           }
@@ -155,54 +233,20 @@ class Table {
   }
 }
 
-class LocationsTable extends Table {
+class RecipesTable extends Table {
   constructor() {
     super({
       // Parametrization supported for the name so it can be user configured.
-      TableName: config.getName('locations'),
-      KeySchema: [{ AttributeName: 'locationId', KeyType: 'HASH' }],
-      AttributeDefinitions: [{ AttributeName: 'locationId', AttributeType: 'S' }],
-      ProvisionedThroughput: {
-        ReadCapacityUnits: 5,
-        WriteCapacityUnits: 5
-      }
-    },
-    // These are custom options that the Table class understands
-    {
-      // Which parameters are auto-generated with uuid.v1() which is time dependant.
-      uuid: ['locationId'],
-      // Whether to add timestamps to the entries.
-      timestamps: true,
-    });
-  }
-
-  delete(locationId) {
-    return super.delete({locationId: locationId});
-  }
-
-  get(locationId) {
-    return super.get({locationId: locationId});
-  }
-
-  update(locationId) {
-    return super.put({locationId: locationId});
-  }
-}
-
-class ResourcesTable extends Table {
-  constructor() {
-    super({
-      // Parametrization supported for the name so it can be user configured.
-        TableName: config.getName('resources'),
-        KeySchema: [{ AttributeName: 'resourceId', KeyType: 'HASH' }],
+      TableName: config.getName('recipes'),
+      KeySchema: [{ AttributeName: 'recipeId', KeyType: 'HASH' }],
       AttributeDefinitions: [
-        { AttributeName: 'resourceId', AttributeType: 'S'},
-        { AttributeName: 'locationId', AttributeType: 'S'}
+        { AttributeName: 'recipeId', AttributeType: 'S' },
+        { AttributeName: 'category', AttributeType: 'S' }
       ],
       GlobalSecondaryIndexes: [
         {
-          IndexName: 'locationIdGSI',
-          KeySchema: [ { AttributeName: 'locationId', KeyType: 'HASH' }],
+          IndexName: 'categoryIndex',
+          KeySchema: [{ AttributeName: 'category', KeyType: 'HASH' }],
           Projection: { ProjectionType: 'ALL' },
           ProvisionedThroughput: {
             ReadCapacityUnits: 5,
@@ -215,65 +259,42 @@ class ResourcesTable extends Table {
         WriteCapacityUnits: 5
       }
     },
-    // These are custom options that the Table class understands
-    {
-      // Which parameters are auto-generated with uuid.v1() which is time dependant.
-      uuid: ['resourceId'],
-      // Whether to add timestamps to the entries.
-      timestamps: true,
-    });
-  }
 
-  delete(resourceId) {
-    return super.delete({resourceId: resourceId});
-  }
-
-  get(resourceId) {
-    return super.get({resourceId: resourceId});
-  }
-
-  update(resourceId) {
-    return super.put({resourceId: resourceId});
-  }
-
-  queryResourcesByLocationId(locationId) {
-    return new Promise((resolve, reject) => {
-      let params = {
-        TableName: this.tableParams.TableName,
-        IndexName: 'locationIdGSI',
-        KeyConditionExpression: 'locationId = :locationId',
-        ExpressionAttributeValues: {
-          ':locationId': locationId,
-        }
-      };
-      documentClient.query(params, (err, data) => {
-        if (err || !data.Items) {
-          reject(LambdaError.notFound(JSON.stringify(locationId)));
-        } else {
-          let items = data.Items;
-          resolve({ items });
-        }
+      // These are custom options that the Table class understands
+      {
+        // Which parameters are auto-generated with uuid.v1() which is time dependant.
+        uuid: ['recipeId'],
+        // Whether to add timestamps to the entries.
+        timestamps: true,
       });
-    });
   }
+
+  delete(recipeId) {
+    return super.delete({ recipeId: recipeId });
+  }
+
+  get(recipeId) {
+    return super.get({ recipeId: recipeId });
+  }
+
 }
 
-class BookingsTable extends Table {
+class FavoritesTable extends Table {
   constructor() {
     super({
       // Parametrization supported for the name so it can be user configured.
-      TableName: config.getName('bookings'),
-      KeySchema: [ { AttributeName: 'bookingId', KeyType: 'HASH' }, ],
+      TableName: config.getName('favorites'),
+      KeySchema: [{ AttributeName: 'favoriteId', KeyType: 'HASH' },],
       AttributeDefinitions: [
-        { AttributeName: 'bookingId', AttributeType: 'S' },
+        { AttributeName: 'favoriteId', AttributeType: 'S' },
         { AttributeName: 'userId', AttributeType: 'S' },
-        { AttributeName: 'resourceId', AttributeType: 'S' },
+        { AttributeName: 'recipeId', AttributeType: 'S' },
         { AttributeName: 'startTimeEpochTime', AttributeType: 'N' },
       ],
       GlobalSecondaryIndexes: [
         {
           IndexName: 'userIdGSI',
-          KeySchema: [ { AttributeName: 'userId', KeyType: 'HASH' }],
+          KeySchema: [{ AttributeName: 'userId', KeyType: 'HASH' }],
           Projection: { ProjectionType: 'ALL' },
           ProvisionedThroughput: {
             ReadCapacityUnits: 5,
@@ -281,7 +302,7 @@ class BookingsTable extends Table {
           }
         },
         {
-          IndexName: 'bookingsByUserByTimeGSI',
+          IndexName: 'isUserFavorite',
           KeySchema: [
             { AttributeName: 'userId', KeyType: 'HASH' },
             { AttributeName: 'startTimeEpochTime', KeyType: 'RANGE' },
@@ -293,9 +314,21 @@ class BookingsTable extends Table {
           }
         },
         {
-          IndexName: 'bookingsByResourceByTimeGSI',
+          IndexName: 'favoritesByUserByTimeGSI',
           KeySchema: [
-            { AttributeName: 'resourceId', KeyType: 'HASH' },
+            { AttributeName: 'userId', KeyType: 'HASH' },
+            { AttributeName: 'startTimeEpochTime', KeyType: 'RANGE' },
+          ],
+          Projection: { ProjectionType: 'ALL' },
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5
+          }
+        },
+        {
+          IndexName: 'favoritesByRecipeByTimeGSI',
+          KeySchema: [
+            { AttributeName: 'recipeId', KeyType: 'HASH' },
             { AttributeName: 'startTimeEpochTime', KeyType: 'RANGE' },
           ],
           Projection: { ProjectionType: 'ALL' },
@@ -311,41 +344,41 @@ class BookingsTable extends Table {
         WriteCapacityUnits: 5
       }
     },
-    // These are custom options that the Table class understands
-    {
-      // Which parameters are auto-generated with uuid.v1() which is time dependant.
-      uuid: ['bookingId'],
-      // Whether to add timestamps to the entries.
-      timestamps: true,
-    });
+      // These are custom options that the Table class understands
+      {
+        // Which parameters are auto-generated with uuid.v1() which is time dependant.
+        uuid: ['favoriteId'],
+        // Whether to add timestamps to the entries.
+        timestamps: true,
+      });
   }
 
-  delete(bookingId) {
+  delete(favoriteId) {
     return super.delete({
-      bookingId: bookingId
+      favoriteId: favoriteId
     });
   }
 
-  get(resourceId, startTime) {
+  get(recipeId, startTime) {
     return super.get({
-      resourceId: resourceId,
+      recipeId: recipeId,
       startTime: startTime
     });
   }
 
-  queryBookingsByResourceId(resourceId) {
+  queryFavoritesByRecipeId(recipeId) {
     return new Promise((resolve, reject) => {
       let params = {
         TableName: this.tableParams.TableName,
-        IndexName: 'bookingsByResourceByTimeGSI',
-        KeyConditionExpression: 'resourceId = :resourceId',
+        IndexName: 'favoritesByRecipeByTimeGSI',
+        KeyConditionExpression: 'recipeId = :recipeId',
         ExpressionAttributeValues: {
-          ':resourceId': resourceId,
+          ':recipeId': recipeId,
         }
       };
       documentClient.query(params, (err, data) => {
         if (err || !data.Items) {
-          reject(LambdaError.notFound(JSON.stringify(resourceId)));
+          reject(LambdaError.notFound(JSON.stringify(recipeId)));
         } else {
           let items = data.Items;
           resolve({ items });
@@ -354,7 +387,7 @@ class BookingsTable extends Table {
     });
   }
 
-  queryBookingsByUserId(userId) {
+  queryFavoritesByUserId(userId) {
     return new Promise((resolve, reject) => {
       let params = {
         TableName: this.tableParams.TableName,
@@ -389,31 +422,30 @@ class ProfilesTable extends Table {
         WriteCapacityUnits: 5
       }
     },
-    // These are custom options that the Table class understands
-    {
-      // Which parameters are auto-generated with uuid.v1() which is time dependant.
-      uuid: ['identityId'],
-      // Whether to add timestamps to the entries.
-      timestamps: true,
-    });
+      // These are custom options that the Table class understands
+      {
+        // Which parameters are auto-generated with uuid.v1() which is time dependant.
+        uuid: ['identityId'],
+        // Whether to add timestamps to the entries.
+        timestamps: true,
+      });
   }
 
   delete(identityId) {
-    return super.delete({identityId: identityId});
+    return super.delete({ identityId: identityId });
   }
 
   get(identityId) {
-    return super.get({identityId: identityId});
+    return super.get({ identityId: identityId });
   }
 
   update(identityId) {
-    return super.put({identityId: identityId});
+    return super.put({ identityId: identityId });
   }
 }
 
 module.exports = {
-  LocationsTable,
-  ResourcesTable,
-  BookingsTable,
+  RecipesTable,
+  FavoritesTable,
   ProfilesTable
 };

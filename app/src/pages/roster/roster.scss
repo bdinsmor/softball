@@ -1,0 +1,52 @@
+// Common list styles can be found in "./common.styles/layouts/lists"
+roster-page {
+	ion-header {
+		@include header-styles(color($colors, header-alt, base), color($colors, header-alt, contrast));
+	}
+
+	.section-title
+		{
+			font-size: 1.8rem;
+			font-weight: 600;
+			color: $white-d;
+			background-color: color($colors, background, base);
+			margin: 8px 16px 16px;
+		}
+
+	.list-mini-content
+	{
+		background-color: color($colors, background, base);
+
+		.list-mini
+		{
+			@include layout-list-styles($theme-color-2, $white-d);
+
+			ion-list {
+				ion-item-sliding
+				{
+					.content-row
+					{
+						
+						.item-title{
+							overflow: hidden;
+							text-overflow: ellipsis;
+							white-space: nowrap;
+						}
+
+						&.one-line
+						{
+							@include align-items(center);
+
+							.item-description
+							{
+								overflow: hidden;
+								text-overflow: ellipsis;
+								white-space: nowrap;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

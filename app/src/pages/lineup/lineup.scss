@@ -1,0 +1,49 @@
+lineup-page {
+    ion-header {
+        @include header-styles(color($colors, header-alt, base), color($colors, header-alt, contrast));
+    }
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #c2c2c2;
+        margin: 8px 16px 16px;
+    }
+    .position-label {
+        position: absolute;
+        border-radius: 4px;
+        padding: 10px;
+        background-color: color($colors, header-alt, base);
+        border: 1px solid gray;
+        -moz-box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
+        -webkit-box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
+        box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
+    }
+    .pitcher {
+        top: 50%;
+        left: 43%;
+    }
+    .catcher {
+        bottom: 10%;
+        left: 43%;
+    }
+    .first {
+        top: 50%;
+        right: 15%;
+    }
+    .lineup-content {
+        background-image: url('../assets/images/field.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+        height: 100%;
+        .schedule-segment {
+            padding: 14px 0px;
+            background-color: $white;
+            @include element-shadow();
+            @include segment-button-styles($theme-color-2);
+            .segment-button {
+                @include segment-text-styles($white-d);
+            }
+        }
+    }
+}

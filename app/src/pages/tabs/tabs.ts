@@ -1,8 +1,7 @@
 import { Component }         from '@angular/core'; 
 import { NavController, NavParams, Tab, Tabs } from 'ionic-angular';
-import { BookingsPage }      from '../bookings/bookings';
-import { WelcomePage }       from '../welcome/welcome';
-import { LocationListPage } from '../location-list/location-list'; 
+import { RosterPage } from '../roster/roster'; 
+import { LineupsPage } from '../lineups/lineups'; 
 import { AccountPage }       from '../account/account';
 
 @Component({ 
@@ -13,10 +12,9 @@ import { AccountPage }       from '../account/account';
 export class TabsPage { 
   // this tells the tabs component which Pages 
   // should be each tab's root Page 
-  tab1Root: any = WelcomePage;
-  tab2Root: any = LocationListPage;
-  tab3Root: any = BookingsPage;
-  tab4Root: any = AccountPage;
+  tab1Root: any = RosterPage;
+  tab2Root: any = LineupsPage;
+  tab3Root: any = AccountPage;
   mySelectedIndex: number;
 
   constructor(navParams: NavParams, public navCtrl : NavController) { 

@@ -7,7 +7,7 @@ var spawn = require('child_process').spawn;
 
 let swaggerDir = path.join(__dirname,'..','swagger');
 let apiSdkDir = path.join(swaggerDir,'generated');
-let appSdkDir = path.join(__dirname,'..','..','app','src','services','spacefinder-sdk');
+let appSdkDir = path.join(__dirname,'..','..','app','src','services','recipes-sdk');
 
 function createSdk() {
   // Create generated directory if it does not exist
@@ -20,7 +20,7 @@ function createSdk() {
 
   return new Promise((resolve, reject) => {
     // Run Swagger codegen locally to generate SDK files
-    let cmd = spawn('swagger-codegen', ['generate', '-i', swaggerDir + '/SpacefinderAPI-exported.yml', '-l', 'typescript-angular2', '-o', apiSdkDir]);
+    let cmd = spawn('swagger-codegen', ['generate', '-i', swaggerDir + '/RecipesAPI-exported.yml', '-l', 'typescript-angular2', '-o', apiSdkDir]);
     cmd.stdout.on('data', data => {
       process.stdout.write(data);
     });

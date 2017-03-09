@@ -1,0 +1,28 @@
+<form class="ingredient-form" [formGroup]="ingredientForm">
+    <ion-row no-padding class="multi-input-row">
+        <ion-col no-padding width-20>
+            <ion-item class="counter-item">
+                <span class="counter-label">Amount</span>
+                <counter-input formControlName="amount"></counter-input>
+            </ion-item>
+        </ion-col>
+        <ion-col no-padding width-20>
+            <ion-item>
+                <ion-label>Units</ion-label>
+                <ion-select formControlName="units" multiple="true">
+                    <ion-option>Cup</ion-option>
+                    <ion-option>Tablespoon</ion-option>
+                    <ion-option>Teaspoon</ion-option>
+                    <ion-option>Pinch</ion-option>
+                    <ion-option>Dash</ion-option>
+                </ion-select>
+            </ion-item>
+        </ion-col>
+        <ion-col no-padding width-60>
+            <ion-item class="multi-input time-item">
+                <ion-label floating>Name</ion-label>
+                <ion-datetime formControlName="name" displayFormat="MM/YYYY" pickerFormat="MM-YYYY"></ion-datetime>
+            </ion-item>
+        </ion-col>
+    </ion-row>
+</form>

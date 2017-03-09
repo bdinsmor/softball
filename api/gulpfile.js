@@ -64,10 +64,9 @@ gulp.task('delete_cognito_pools', function(done){
 gulp.task('create_dynamodb_tables', function(done){
   logger.info('Creating DynamoDB tables...');
   let promises = [
-    (new lambdaData.LocationsTable()).safeCreateTable(),
-    (new lambdaData.BookingsTable()).safeCreateTable(),
+    (new lambdaData.RecipesTable()).safeCreateTable(),
+    (new lambdaData.FavoritesTable()).safeCreateTable(),
     (new lambdaData.ProfilesTable()).safeCreateTable(),
-    (new lambdaData.ResourcesTable()).safeCreateTable(),
   ];
   execPromise(Promise.all(promises), done);
 });
@@ -75,10 +74,9 @@ gulp.task('create_dynamodb_tables', function(done){
 gulp.task('delete_dynamodb_tables', function(done){
   logger.info('Deleting DynamoDB tables');
   let promises = [
-    (new lambdaData.LocationsTable()).deleteTable(),
-    (new lambdaData.BookingsTable()).deleteTable(),
+    (new lambdaData.RecipesTable()).deleteTable(),
+    (new lambdaData.FavoritesTable()).deleteTable(),
     (new lambdaData.ProfilesTable()).deleteTable(),
-    (new lambdaData.ResourcesTable()).deleteTable(),
   ];
   execPromise(Promise.all(promises), done);
 });
@@ -174,6 +172,11 @@ gulp.task('undeploy', gulp.series(
   'delete_dynamodb_tables',
   'delete_cloudformation_stack',
   'delete_cloudwatch_logs'
+));
+
+gulp.task('redeploy_lambda', gulp.series(
+  'delete_lambda_functions',
+  'deploy_lambda'
 ));
 
 gulp.task('bootstrap', gulp.series('deploy','generate_sample_users', 'generate_sample_data'));

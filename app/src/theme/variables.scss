@@ -14,6 +14,23 @@ $text-color:        #000;
 $background-color:  #fff;
 
 
+$white: #fff;
+$white-a: darken($white, 3%);
+$white-b: darken($white, 6%);
+$white-c: darken($white, 12%);
+$white-d: darken($white, 24%);
+
+$black: rgba(#000000, .8);
+$black-a: lighten($black, 10%);
+$black-b: lighten($black, 20%);
+$black-c: lighten($black, 40%);
+$black-d: lighten($black, 60%);
+
+$theme-color-1: #1976D2;
+$theme-color-2: #2196F3;
+$theme-color-3: #757575;
+$theme-color-4: #E53935;
+
 // Named Color Variables
 // --------------------------------------------------
 // Named colors makes it easy to reuse colors on various components.
@@ -22,14 +39,60 @@ $background-color:  #fff;
 // colors so you can add, rename and remove colors as needed.
 // The "primary" color is the only required color in the map.
 
+
 $colors: (
   primary:    #387ef5,
   secondary:  #32db64,
   danger:     #f53d3d,
   light:      #f4f4f4,
   dark:       #222,
-  favorite:   #69BB7B
+  favorite:   #69BB7B,
+  walkthrough:(
+    base: $theme-color-1,
+    contrast: $white
+  ),
+  walkthrough-alt:(
+    base: $theme-color-2,
+    contrast: $white
+  ),
+  walkthrough-header:(
+    base: transparent,
+    contrast: $white
+  ),
+  header:(
+    base: $theme-color-1,
+    contrast: $white
+  ),
+  header-alt:(
+    base: $theme-color-2,
+    contrast: $white
+  ),
+  facebook:(
+    base: #3b5998,
+    contrast: $white
+  ),
+  google:(
+    base: #cc181e,
+    contrast: $white
+  ),
+  button:(
+    base: $theme-color-1,
+    contrast: $white
+  ),
+  button-alt:(
+    base: $theme-color-2,
+    contrast: $white
+  ),
+  background:(
+    base: $white-a,
+    contrast: $black-b
+  ),
+  tabs-navigation:(
+    base: $white,
+    contrast: $white-d
+  )
 );
+
 
 // Change #000 to any color to see the md text color change
 $text-md-color:                           #000;
@@ -44,10 +107,6 @@ $tabs-md-background:                      #f8f8f8;
 $tabs-md-tab-color-active:                color($colors, primary);
 $tabs-md-tab-color:                       rgba(#8c8c8c, 0.7);
 
-// Change the color of the segment button text
-$toolbar-md-active-color:                 #fff;
-$toolbar-md-inactive-color:               #fff;
-$segment-button-md-text-color-activated:  #fff;
 
 
 

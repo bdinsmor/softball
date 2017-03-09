@@ -1,0 +1,21 @@
+.signup-form {
+
+		background: url('../../assets/images/farmoverview.jpg') no-repeat center center fixed; 
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        border-radius: 4px;
+        ion-list {
+            padding: 8px;
+            border-radius: 4px; 
+            
+            ion-item {
+                background: rgba(255,255,255,0.56);
+                padding-bottom: 6px !important;
+                ion-label {
+                    color: #222 !important;
+                }
+            }
+        }
+}

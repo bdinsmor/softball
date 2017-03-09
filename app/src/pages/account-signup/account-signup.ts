@@ -18,7 +18,7 @@ export class AccountSignupPage {
     password: 'Test123!',
     givenName: 'Jim',
     familyName: 'Tran',
-    email: 'jim@aws-demos.com'
+    email: 'bdinsmor@gmail.com'
   };
 
   public submitted: boolean = false;

@@ -1,0 +1,35 @@
+{
+    "name": "Ponytail Express",
+    "coaches": [
+        {
+      "name": "Brian Dinsmore",
+       "image": "./assets/images/coach.jpg",
+      "description": "Bats Right, Throws Right",
+      "email":"bdinsmor@gmail.com",
+      "phone":"7033499059"
+    }
+    ],
+  "players": [
+    {
+      "name": "Elsie Dinsmore",
+       "image": "./assets/images/softball.jpg",
+      "description": "Bats Right, Throws Right",
+      "email":"bdinsmor@gmail.com",
+      "phone":"7033499059"
+    },
+    {
+      "name": "Leah Dinsmore",
+      "image": "./assets/images/softball.jpg",
+      "description": "Bats Right, Throws Right",
+      "email":"bdinsmor@gmail.com",
+      "phone":"7033499059"
+      },
+    {
+      "name": "Brooke Gallagher",
+       "image": "./assets/images/softball.jpg",
+      "description": "Bats Right, Throws Right",
+      "email":"bdinsmor@gmail.com",
+      "phone":"7033499059"
+    }
+  ]
+}

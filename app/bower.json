@@ -1,10 +1,9 @@
 {
-  "name": "spacefinder",
-  "description": "SpaceFinder: Book conference rooms, desks and more",
+  "name": "recipes",
+  "description": "Recipes: True Family Secrets",
   "main": "",
   "authors": [
-    "Jim Tran",
-    "Justin Pirtle"
+    "Brian Dinsmore"
   ],
   "license": "MIT",
   "homepage": "https://github.com/justonian/spacefinder",

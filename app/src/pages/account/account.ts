@@ -3,7 +3,6 @@ import { NavController } from 'ionic-angular';
 import { AccountSigninPage } from '../account-signin/account-signin';
 import { AccountSignupPage } from '../account-signup/account-signup';
 import { AccountChangePasswordPage } from '../account-change-password/account-change-password';
-import { LocationAddPage } from '../location-add/location-add';
 import { GlobalStateService } from '../../services/global-state.service';
 import { ImagePicker } from 'ionic-native';
 import { UserLoginService } from '../../services/account-management.service';
@@ -22,8 +21,6 @@ export class AccountPage {
   accountSigninPage = AccountSigninPage;
   accountSignupPage = AccountSignupPage;
   accountChangePasswordPage = AccountChangePasswordPage;
-  locationAddPage = LocationAddPage;
-
   imageUploadEventListenerAttached = false;
   profileImageURI = `https://s3-${Config.REGION}.amazonaws.com/${Config.PROFILE_IMAGES_S3_BUCKET}/test.jpg`;
   profileImageDisplay = false;

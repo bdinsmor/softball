@@ -1,0 +1,289 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: Recipes-API
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths
+basePath: /
+#
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /recipes:
+    get:
+      description: Returns List of 'Recipes'
+      # used as the method name of the controller
+      operationId: recipes-List
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/RecipesListResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      security:
+      - recipes-userPool-authorizer: []
+    post:
+      description: Adds a Recipe
+      operationId: recipes-Create
+      parameters:
+      - $ref: "#/parameters/Recipe"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Recipe"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      security:
+      - recipes-userPool-authorizer: []
+    put:
+      description: Updates a Recipe
+      operationId: recipes-Update
+      parameters:
+      - $ref: "#/parameters/Recipe"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Recipe"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      security:
+      - recipes-userPool-authorizer: []
+  /recipes/{recipeId}:
+    delete:
+      description: Deletes a Recipe
+      operationId: recipes-Delete
+      parameters:
+      - $ref: "#/parameters/RecipeId"
+      responses:
+        "200":
+          description: Success
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      security:
+      - recipes-userPool-authorizer: []
+    get:
+      description: Returns a Recipe
+      # used as the method name of the controller
+      operationId: recipes-Get
+      parameters:
+      - $ref: "#/parameters/RecipeId"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/Recipe"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      security:
+      - sigv4: []
+  /feed/{categoryName}:
+    get:
+      description: Returns Filtered List of 'Recipes'
+      # used as the method name of the controller
+      operationId: recipes-Feed
+      parameters:
+      - $ref: "#/parameters/CategoryName"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/RecipesListResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      security:
+      - recipes-userPool-authorizer: []
+  /favorites/{recipeId}:
+    delete:
+      description: Deletes a Favorite
+      operationId: favorites-Delete
+      parameters:
+      - $ref: "#/parameters/RecipeId"
+      responses:
+        "200":
+          description: Success
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      security:
+      - recipes-userPool-authorizer: []
+    get:
+      description: Returns a Recipe
+      # used as the method name of the controller
+      operationId: favorites-Get
+      parameters:
+      - $ref: "#/parameters/RecipeId"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/Recipe"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      security:
+      - sigv4: []
+parameters:
+  Recipe:
+    in: "body"
+    name: "body"
+    required: true
+    schema:
+      $ref: "#/definitions/Recipe"
+  RecipeId:
+    in: "path"
+    name: "recipeId"
+    required: true
+    type: string
+  CategoryName:
+    in: "path"
+    name: "categoryName"
+    required: true
+    type: string
+  SearchTerm:
+    in: "body"
+    name: "SearchTerm"
+    required: true
+    schema:
+      $ref: "#/definitions/SearchTerm"
+# complex objects have schema definitions
+definitions:
+  RecipesListResponse:
+    required:
+    - items
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/Recipe"
+  Ingredient:
+    required:
+    - name
+    properties:
+      ingredientId:
+        type: string
+      name:
+        type: string
+      notes:
+        type: string
+  Instruction:
+    required:
+    - notes
+    properties:
+      instructionId:
+        type: string
+      notes:
+        type: string
+      imageUrl:
+        type: string
+  Category:
+    required:
+    - name
+    properties:
+      categoryId:
+        type: string
+      name:
+        type: string
+  Recipe:
+    required:
+    - name
+    - ingredients
+    - instructions
+    properties:
+      recipeId:
+        type: string
+      name:
+        type: string
+      notes:
+        type: string
+      difficulty:
+        type: string
+      servings:
+        type: string
+      categories:
+        type: array
+        items:
+          $ref: "#/definitions/Category"
+      ingredients:
+        type: array
+        items:
+          $ref: "#/definitions/Ingredient"
+      instructions:
+        type: array
+        items:
+          $ref: "#/definitions/Instruction"
+      imageUrl:
+        type: string
+  SearchTerm:
+    required:
+    - q
+    properties:
+      q:
+        type: string
+      author:
+        type: string
+      startDate:
+        type: string
+      endDate:
+        type: string
+  ErrorResponse:
+    required:
+      - message
+      - type
+    properties:
+      message:
+        type: string
+      type:
+        type: string
+securityDefinitions:
+  recipes-custom-authorizer:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+    x-amazon-apigateway-authtype: "custom"
+  recipes-userPool-authorizer:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+    x-amazon-apigateway-authtype: "cognito_user_pools"
+  sigv4:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+    x-amazon-apigateway-authtype: "awsSigv4"
+    

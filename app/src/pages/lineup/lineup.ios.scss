@@ -1,0 +1,8 @@
+ion-app.ios {
+	lineup-page {
+		.inning-segment
+		{
+			@include segment-button-ios-styles();
+		}
+	}
+}

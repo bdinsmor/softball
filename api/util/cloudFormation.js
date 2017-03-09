@@ -12,7 +12,7 @@ var stackName = config.getName('stack');
 
 function createStack() {
   return new Promise((resolve, reject) => {
-    var filePath = path.join(__dirname, '../cloudformation/Spacefinder.json');
+    var filePath = path.join(__dirname, '../cloudformation/Recipes.json');
     if (!fs.existsSync(filePath)) {
       reject(new Error(`${filePath} does not exists!`));
     }

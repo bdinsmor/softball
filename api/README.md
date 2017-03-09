@@ -1,4 +1,4 @@
-# spacefinder-api
+# recipes-api
 
 lambda/data
 

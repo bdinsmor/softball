@@ -12,7 +12,7 @@ const Config = {
   IDENTITY_POOL_ID:           'us-east-1:992b6d88-74c2-4d5a-9dcd-25e37fa0ff45',
   REGION:                     'us-east-1',  // Your AWS region where you setup your Cognito User Pool and Federated Identities
 
-  PROFILE_IMAGES_S3_BUCKET:   'spacefinder-api-development-stack-userdatabucket-14zwhc5glptvt',
+  PROFILE_IMAGES_S3_BUCKET:   'recipes-api-development-stack-userdatabucket-14zwhc5glptvt',
 
   API_ENDPOINT:               'https://6jmlncvx8c.execute-api.us-east-1.amazonaws.com/development',
 

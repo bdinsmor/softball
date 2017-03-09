@@ -1,0 +1,45 @@
+{
+    "banner_image": "./assets/images/cover2.jpg",
+    "banner_title": "Recipes",
+    "populars": [
+        {
+            "title": "Appetizers",
+            "image": "./assets/images/appetizers.jpg"
+        },
+        {
+            "title": "Entrees",
+            "image": "./assets/images/entrees.jpg"
+        },
+        {
+            "title": "Desserts",
+            "image": "./assets/images/desserts.jpg"
+        }
+    ],
+    "categories": [
+        {
+            "title": "Appetizers",
+            "image": "./assets/images/appetizers.jpg"
+        },
+        {
+            "title": "Entrees",
+            "image": "./assets/images/entrees.jpg"
+        },
+        {
+            "title": "Desserts",
+            "image": "./assets/images/desserts.jpg"
+        },
+        {
+            "title": "Cookies",
+            "image": "./assets/images/cookies.jpg"
+        },
+        {
+            "title": "Pies",
+            "image": "./assets/images/pies.jpg"
+        },
+        {
+            "title": "Cakes",
+            "image": "./assets/images/cakes.jpg"
+        }
+
+    ]
+}

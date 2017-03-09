@@ -7,11 +7,12 @@ import { Logger }     from '../services/logger.service';
 import { GlobalStateService } from '../services/global-state.service';
 
 @Component({
-  template: `<ion-nav [root]="rootPage"></ion-nav>`,
+  templateUrl: 'app.html',
   providers: [UserRegistrationService, GlobalStateService, Logger]
 })
 export class MyApp {
   rootPage = TabsPage;
+  
 
   constructor(platform: Platform) {
     platform.ready().then(() => {

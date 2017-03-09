@@ -28,7 +28,7 @@ export class AccountSigninPage {
   alertCtrl : AlertController = this.globals.getAlertController();
 
   public userData: IUserLogin = {
-    username: "user1",
+    username: "jim",
     password: "Test123!"
   };
 

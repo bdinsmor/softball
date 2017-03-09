@@ -1,0 +1,85 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>Ponytail Roster</ion-title>
+    </ion-navbar>
+    <ion-fab right bottom edge>
+        <button ion-fab color="danger"><ion-icon name="add"></ion-icon></button>
+    </ion-fab>
+</ion-header>
+
+<ion-content class="list-mini-content">
+    <div class="list-mini">
+        <h4 class="section-title">Players</h4>
+        <ion-list>
+            <ion-item-sliding class="list-item" *ngFor="let item of roster.players">
+                <ion-item>
+                    <ion-row no-padding class="content-row one-line">
+                        <!-- You can limit the rows of the description by using the class one-line. If you remove it, all the content from the row will be shown -->
+
+                        <ion-col no-padding width-18 class="item-avatar">
+                            <preload-image class="avatar-image" [ratio]="{w:1, h:1}" [src]="item.image"></preload-image>
+                        </ion-col>
+                        <ion-col no-padding width-72 class="item-content">
+                            <h3 class="item-title">{{item.name}}</h3>
+                            <p class="item-description">{{item.birthDate | date: "MMM dd yyyy"}}</p>
+                        </ion-col>
+                    </ion-row>
+                </ion-item>
+                <ion-item-options side="left">
+                    <button ion-button color="primary">
+        <ion-icon name="text"></ion-icon>
+        Text
+      </button>
+                    <button ion-button color="secondary">
+        <ion-icon name="call"></ion-icon>
+        Call
+      </button>
+                </ion-item-options>
+                <ion-item-options side="right">
+                    <button ion-button color="primary">
+        <ion-icon name="mail"></ion-icon>
+        Email
+      </button>
+                </ion-item-options>
+            </ion-item-sliding>
+        </ion-list>
+
+    </div>
+    <div class="list-mini">
+        <h4 class="section-title">Coaches</h4>
+        <ion-list>
+            <ion-item-sliding class="list-item" *ngFor="let item of roster.coaches">
+                <ion-item>
+                    <ion-row no-padding class="content-row one-line">
+                        <!-- You can limit the rows of the description by using the class one-line. If you remove it, all the content from the row will be shown -->
+
+                        <ion-col no-padding width-18 class="item-avatar">
+                            <preload-image class="avatar-image" [ratio]="{w:1, h:1}" [src]="item.image"></preload-image>
+                        </ion-col>
+                        <ion-col no-padding width-72 class="item-content">
+                            <h3 class="item-title">{{item.name}}</h3>
+                            <p class="item-description">{{item.phone}}</p>
+                        </ion-col>
+                    </ion-row>
+                </ion-item>
+                <ion-item-options side="left">
+                    <button ion-button color="primary">
+        <ion-icon name="text"></ion-icon>
+        Text
+      </button>
+                    <button ion-button color="secondary">
+        <ion-icon name="call"></ion-icon>
+        Call
+      </button>
+                </ion-item-options>
+                <ion-item-options side="right">
+                    <button ion-button color="primary">
+        <ion-icon name="mail"></ion-icon>
+        Email
+      </button>
+                </ion-item-options>
+            </ion-item-sliding>
+        </ion-list>
+
+    </div>
+</ion-content>

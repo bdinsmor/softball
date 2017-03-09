@@ -78,7 +78,7 @@ function processSecurityDefinitions(accountId, region, userPoolId) {
     in: 'header',
     'x-amazon-apigateway-authtype': 'awsSigv4'
   };
-  securityDefinitions['spacefinder-custom-authorizer'] = {
+  securityDefinitions['recipes-custom-authorizer'] = {
     type: 'apiKey',
     name: 'Authorization',
     in: 'header',
@@ -89,7 +89,7 @@ function processSecurityDefinitions(accountId, region, userPoolId) {
       type: 'token'
     }
   };
-  securityDefinitions['spacefinder-userPool-authorizer'] = {
+  securityDefinitions['recipes-userPool-authorizer'] = {
     type: 'apiKey',
     name: 'Authorization',
     in: 'header',
@@ -112,7 +112,7 @@ function getApiInvokeUrl() {
 }
 
 function getApiDoc(restAPI, accountId, region, userPoolId) {
-  let api = yaml.safeLoad(fs.readFileSync(path.join(__dirname, '..', 'swagger', 'SpacefinderAPI.yml')).toString());
+  let api = yaml.safeLoad(fs.readFileSync(path.join(__dirname, '..', 'swagger', 'RecipesAPI.yml')).toString());
   api.host = `${restAPI}.execute-api.${region}.amazonaws.com`;
   for (let path in api.paths) {
     for (let method in api.paths[path]) {
@@ -195,7 +195,7 @@ function exportApi() {
           return;
         }
         let apiDoc = JSON.parse(data.body);
-        fs.writeFileSync(path.join(__dirname, '..', 'swagger', 'SpacefinderAPI-exported.yml'), yaml.safeDump(apiDoc));
+        fs.writeFileSync(path.join(__dirname, '..', 'swagger', 'RecipesAPI-exported.yml'), yaml.safeDump(apiDoc));
         logger.info('Successfully exported Swagger yaml definition from AWS');
         resolve('Successfully exported Swagger');
       });
@@ -205,7 +205,7 @@ function exportApi() {
 
 function deleteApiExport() {
   return new Promise((resolve, reject) => {
-    fs.unlink(path.join(__dirname, '..', 'swagger', 'SpacefinderAPI-exported.yml'), (err) => {
+    fs.unlink(path.join(__dirname, '..', 'swagger', 'RecipesAPI-exported.yml'), (err) => {
       if (err) {
         reject(err);
       }

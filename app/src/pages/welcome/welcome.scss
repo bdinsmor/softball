@@ -12,6 +12,7 @@ welcome {
     color: black;
     padding-left: 20px;
     padding-top: 4px;
+    justify-content: center;
   }
   .title {
     color: black;
@@ -21,7 +22,7 @@ welcome {
   .full-bleed-background-image {
     // font-size: 44px;
     background-color:#EFEFEA;
-    background-image: url("../assets/images/conference_room_unsplash.jpg");
+    background-image: url("../assets/images/farmoverview.jpg");
     background-size:cover;
     background-size: 100%;
     background-repeat: no-repeat;

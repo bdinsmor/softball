@@ -117,7 +117,7 @@ function addPermission(config) {
 }
 
 function createFunctionsFromSwagger() {
-  var api = yaml.safeLoad(fs.readFileSync(path.join(__dirname, '..', 'swagger', 'SpacefinderAPI.yml')).toString());
+  var api = yaml.safeLoad(fs.readFileSync(path.join(__dirname, '..', 'swagger', 'RecipesAPI.yml')).toString());
   var promises = [];
   for (let path in api.paths) {
     for (let method in api.paths[path]) {

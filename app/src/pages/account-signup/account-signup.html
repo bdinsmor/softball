@@ -8,16 +8,13 @@
 </ion-header>
 
 
-<ion-content padding>
+<ion-content padding class="signup-form">
 
   <p *ngIf="submitted && (!username.valid || !password.valid || !lastName.valid)" style="color: #ea6153;">Please fill out all details accurately.</p>
 
   <form #signUpForm="ngForm" novalidate>
   <ion-list>
 
-      <p>
-        Registration is fast and free. Once you're a member, you'll be able to book conference rooms and other resources. After you fill out this form, you will receive an email with a verification code.
-      </p>
 
       <ion-item>
         <ion-label floating>Username</ion-label>

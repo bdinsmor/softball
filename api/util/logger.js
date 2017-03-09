@@ -9,7 +9,7 @@ var prettyStdErr = new PrettyStream();
 prettyStdErr.pipe(process.stderr);
 
 module.exports = bunyan.createLogger({
-  name: 'spacefinder',
+  name: 'recipes',
   streams: [{
     level: 'debug',
     type: 'raw',
